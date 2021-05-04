@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="../static/style.css" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      body {
+        background-image: url("../static/bg_6.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        /*background-color: #cccccc;*/
+      }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $("#company").change(function () {
+          var company = $("#company").val();
+          console.log(company);
+          // Make Ajax Request and expect JSON-encoded data
+          $.getJSON(
+            "http://127.0.0.1:1212/get_models" + "/" + company,
+            function (data) {
+              // Remove old options
+              $("#models").find("option").remove();
+
+              // Add new items
+              $.each(data, function (key, val) {
+                var option_item =
+                  '<option value="' + val + '">' + val + "</option>";
+                $("#models").append(option_item);
+              });
+            }
+          );
+        });
+      });
+    </script>
+    <title>WearIt</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                  <a class="navbar-brand a" href="/"><strong>WearIt</strong></a>
+                </div>
+                <ul class="nav navbar navbar-right">
+                  <li>
+                    <a href="{{ url_for('index') }}" class="navbar-brand a"><strong>Static</strong></a>
+                  </li>
+                  <li>
+                    <a href="{{ url_for('RT') }}" class="navbar-brand a"><strong>RealTime</strong></a>
+                  </li>
+                  <li>
+                    <a href="{{ url_for('logout') }}" class="navbar-brand a"><strong>Logout</strong></a>
+                  </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="container">
+            <form class="form-inline" action="http://127.0.0.1:5000/pred" method="post">
+                <select name="tshirt" class="form-control" id="company">
+                    <option value="0" selected="selected">Select a t-shirt</option>
+                    <option value="1">Yellow t-shirt</option>
+                    <option value="2">Green t-shirt</option>
+                    <option value="3">Orange t-shirt</option>
+                    <option value="4">White t-shirt</option>
+                </select>
+                <button type="submit" class="btn btn-default">Try</button>
+            </form>
+            <div class="row">
+                <div class="col-md-3">
+                    <figure>
+                        <img src="../static/newk_1.png" class="thumbnail" />
+                        <figcaption>Yellow t-shirt</figcaption>
+                    </figure>
+                </div>
+                <div class="col-md-3">
+                    <figure>
+                        <img src="../static/green.png" class="thumbnail" />
+                        <figcaption>Green t-shirt</figcaption>
+                    </figure>
+                </div>
+                <div class="col-md-3">
+                    <figure>
+                        <img src="../static/orange.png" class="thumbnail" />
+                        <figcaption>Orange t-shirt</figcaption>
+                    </figure>
+                </div>
+                <div class="col-md-3">
+                    <figure>
+                        <img src="../static/white_1.png" class="thumbnail" />
+                        <figcaption>White t-shirt</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
