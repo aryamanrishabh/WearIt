@@ -20,6 +20,7 @@ app.config['MYSQL_DB'] = 'userlogin'
 
 mysql = MySQL(app)
 
+
 @app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -76,23 +77,33 @@ def register():
         msg = 'Please fill out the form !'
     return render_template('register.html', msg=msg)
 
+
 @app.route('/index')
 def index():
     return render_template('index.html')
 
-@app.route('/predict', methods=['GET','POST'])
+
+@app.route('/predict', methods=['GET', 'POST'])
 def predict():
-    shirtno = int(request.form["tshirt"])
+    shirtno = int(request.form["shirt"])
     ih = shirtno
 
-    frame = cv2.imread("sample_single.png")
+    gender = int(request.form["gender"])
+    i = gender
+    # frame = cv2.imread("sample_single.png")
 
-    cv2.waitKey(1)
+    # cv2.waitKey(1)
 
     while True:
         imgarr = ["shirt_1.png", "shirt_2.jpg", "shirt_3.jpg", "shirt_4.jpg"]
 
         imgshirt = imgarr[ih - 1]
+
+        genderarr = ["sample_single.png", "girl.png"]
+
+        imggender = genderarr[i - 1]
+        frame = cv2.imread(imggender)
+        cv2.waitKey(1)
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -111,10 +122,10 @@ def predict():
         mask_black_3CH[:, :, 2] = mask_black
 
         cv2.imshow('orignal', frame)
-        #cv2.imshow('mask_black', mask_black_3CH)
+        # cv2.imshow('mask_black', mask_black_3CH)
 
         dst3 = cv2.bitwise_and(mask_black_3CH, frame)
-        #cv2.imshow('Pic+mask_inverse', dst3)
+        # cv2.imshow('Pic+mask_inverse', dst3)
 
         # ///////
         W, L = mask_white.shape
@@ -123,40 +134,44 @@ def predict():
         mask_white_3CH[:, :, 1] = mask_white
         mask_white_3CH[:, :, 2] = mask_white
 
-        #cv2.imshow('Wh_mask', mask_white_3CH)
+        # cv2.imshow('Wh_mask', mask_white_3CH)
         dst3_wh = cv2.bitwise_or(mask_white_3CH, dst3)
-        #cv2.imshow('Pic+mask_wh', dst3_wh)
+        # cv2.imshow('Pic+mask_wh', dst3_wh)
 
         # /////////////////
 
         # changing for design
         design = cv2.imread(imgshirt)
         design = cv2.resize(design, mask_black.shape[1::-1])
-        #cv2.imshow('design resize', design)
+        # cv2.imshow('design resize', design)
 
         design_mask_mixed = cv2.bitwise_or(mask_black_3CH, design)
-        #cv2.imshow('design_mask_mixed', design_mask_mixed)
+        # cv2.imshow('design_mask_mixed', design_mask_mixed)
 
         final_mask_black_3CH = cv2.bitwise_and(design_mask_mixed, dst3_wh)
         cv2.imshow('final_out', final_mask_black_3CH)
 
-        cv2.waitKey()
+        if cv2.waitKey(10) == 27:
+            cv2.destroyAllWindows()
+            break
 
-
-    #copy
-    cap.release()  # Destroys the cap object
-    cv2.destroyAllWindows()  # Destroys all the windows created by imshow
+    # copy
+    # cap.release()  # Destroys the cap object
+    # cv2.destroyAllWindows()  # Destroys all the windows created by imshow
 
     return render_template('index.html')
+
 
 @app.route('/RT')
 def RT():
     return render_template('realtime.html')
 
-@app.route('/pred', methods=['GET','POST'])
+
+@app.route('/pred', methods=['GET', 'POST'])
 def pred():
     parser = argparse.ArgumentParser(description='Code for Cascade Classifier tutorial.')
-    parser.add_argument('--face_cascade', help='Path to face cascade.',default='data/haarcascades/haarcascade_frontalface_alt.xml')
+    parser.add_argument('--face_cascade', help='Path to face cascade.',
+                        default='data/haarcascades/haarcascade_frontalface_alt.xml')
     parser.add_argument('--camera', help='Camera divide number.', type=int, default=0)
     args = parser.parse_args()
     face_cascade_name = args.face_cascade
@@ -165,16 +180,16 @@ def pred():
     shirtno = int(request.form.get("tshirt", False))
     i = shirtno
 
-    #-- 1. Load the cascades
+    # -- 1. Load the cascades
     if not face_cascade.load(cv2.samples.findFile(face_cascade_name)):
         print('--(!)Error loading face cascade')
         exit(0)
     camera_device = args.camera
 
-    #-- 2. Read the video stream
+    # -- 2. Read the video stream
     cap = cv2.VideoCapture(camera_device)
-    cap.set(3,480) #CV_CAP_PROP_FRAME_WIDTH
-    cap.set(4,360) #CV_CAP_PROP_FRAME_HEIGHT
+    cap.set(3, 480)  # CV_CAP_PROP_FRAME_WIDTH
+    cap.set(4, 360)  # CV_CAP_PROP_FRAME_HEIGHT
     cap.set(cv2.CAP_PROP_FPS, 120)
 
     if not cap.isOpened:
@@ -196,8 +211,9 @@ def pred():
             cap.release()
             cv2.destroyAllWindows()
             break
-            
+
     return render_template('realtime.html')
+
 
 if __name__ == '__main__':
     app.run(host='localhost', debug=True, port=5000)

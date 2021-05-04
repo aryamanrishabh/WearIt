@@ -52,17 +52,17 @@
         <div class="navbar-header">
           <a class="navbar-brand a" href="/"><strong>WearIt</strong></a>
         </div>
-        <ul class="nav navbar navbar-right">
-          <li>
+        <p class="nav navbar navbar-right" id=""navlist>
+          <span>
             <a href="{{ url_for('index') }}" class="navbar-brand a"><strong>Static</strong></a>
-          </li>
-          <li>
+          </span>
+          <span>
             <a href="{{ url_for('RT') }}" class="navbar-brand a"><strong>RealTime</strong></a>
-          </li>
-          <li>
+          </span>
+          <span>
             <a href="{{ url_for('logout') }}" class="navbar-brand a"><strong>Logout</strong></a>
-          </li>
-        </ul>
+          </span>
+        </p>
         <!--<ul class="nav navbar-nav navbar-right">
                     <li><a data-toggle="modal" data-target="#myModal">Predict</a></li>
                     <li>&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
@@ -85,6 +85,11 @@
           <option value="2">Green t-shirt</option>
           <option value="3">White t-shirt</option>
           <option value="4">Black t-shirt</option>
+        </select>
+        <select name="gender" class="form-control" id="company">
+          <option value="0" selected="selected">Gender</option>
+          <option value="1">Male</option>
+          <option value="2">Female</option>
         </select>
         <button type="submit" class="btn btn-default">Try</button>
       </form>

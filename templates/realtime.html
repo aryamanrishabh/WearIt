@@ -52,17 +52,17 @@
                 <div class="navbar-header">
                   <a class="navbar-brand a" href="/"><strong>WearIt</strong></a>
                 </div>
-                <ul class="nav navbar navbar-right">
-                  <li>
+                <p class="nav navbar navbar-right" id="navlist">
+                  <span>
                     <a href="{{ url_for('index') }}" class="navbar-brand a"><strong>Static</strong></a>
-                  </li>
-                  <li>
+                  </span>
+                  <span>
                     <a href="{{ url_for('RT') }}" class="navbar-brand a"><strong>RealTime</strong></a>
-                  </li>
-                  <li>
+                  </span>
+                  <span>
                     <a href="{{ url_for('logout') }}" class="navbar-brand a"><strong>Logout</strong></a>
-                  </li>
-                </ul>
+                  </span>
+                </p>
             </div>
         </nav>
         <div class="container">
