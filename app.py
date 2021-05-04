@@ -13,6 +13,7 @@ app = Flask(__name__)
 
 app.secret_key = os.urandom(12)
 
+
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
