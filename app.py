@@ -95,14 +95,14 @@ def predict():
 
     # cv2.waitKey(1)
 
+    imgarr = ["shirt_1.png", "blue_1.png", "shirt_3.jpg", "shirt_4.jpg"]
+    imgshirt = imgarr[ih - 1]
+
+    genderarr = ["sample_single.png", "girl.png"]
+    imggender = genderarr[i - 1]
+
     while True:
-        imgarr = ["shirt_1.png", "shirt_2.jpg", "shirt_3.jpg", "shirt_4.jpg"]
 
-        imgshirt = imgarr[ih - 1]
-
-        genderarr = ["sample_single.png", "girl.png"]
-
-        imggender = genderarr[i - 1]
         frame = cv2.imread(imggender)
         cv2.waitKey(1)
 
@@ -198,7 +198,7 @@ def pred():
         exit(0)
 
     while True:
-        imgarr = ["newk_1.png", "green.png", "orange.png", "white_1.png"]
+        imgarr = ["newk_1.png", "blue_1.png", "orange.png", "white_1.png"]
         imgshirt = imgarr[i - 1]
 
         ret, frame = cap.read()

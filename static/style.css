@@ -1,7 +1,3 @@
-img {
-  height: 200px;
-  margin-top: 100px;
-}
 figcaption {
   color: white;
   font-weight: 600;
@@ -50,7 +46,7 @@ figcaption {
   background-color: rgb(204, 204, 204); /* #9ac0cd;*/
 }
 .a {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 .btns {
   padding: 10px 40px;
@@ -92,4 +88,16 @@ figcaption {
 }
 #login {
   background-image: url("../static/bg_6.jpg");
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+a:active {
+  text-decoration: none;
+}
+
+img#tnail {
+  height: 250px;
 }
