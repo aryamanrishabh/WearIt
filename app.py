@@ -85,27 +85,21 @@ def index():
 
 
 @app.route('/predict', methods=['GET', 'POST'])
-def predict():
-    shirtno = int(request.form["shirt"])
-    ih = shirtno
-
+def predict(file):
     gender = int(request.form["gender"])
     i = gender
-    # frame = cv2.imread("sample_single.png")
-
-    # cv2.waitKey(1)
-
-    imgarr = ["shirt_1.png", "blue_1.png", "shirt_3.jpg", "shirt_4.jpg"]
-    imgshirt = imgarr[ih - 1]
-
     genderarr = ["sample_single.png", "girl.png"]
     imggender = genderarr[i - 1]
 
+    shirtno = int(request.form["shirt"])
+    ih = shirtno
+    imgarr = ["shirt_1.png", "blue_1.png", "shirt_3.jpg", "shirt_4.jpg"]
+    imgshirt = imgarr[ih - 1]
+    # frame = cv2.imread("sample_single.png")
+    frame = cv2.imread(imggender)
+    cv2.waitKey(1)
+
     while True:
-
-        frame = cv2.imread(imggender)
-        cv2.waitKey(1)
-
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         # define range of green color in HSV
@@ -159,14 +153,12 @@ def predict():
     # copy
     # cap.release()  # Destroys the cap object
     # cv2.destroyAllWindows()  # Destroys all the windows created by imshow
-
     return render_template('index.html')
 
 
 @app.route('/RT')
 def RT():
     return render_template('realtime.html')
-
 
 @app.route('/pred', methods=['GET', 'POST'])
 def pred():
@@ -214,6 +206,73 @@ def pred():
             break
 
     return render_template('realtime.html')
+
+@app.route('/staticupload')
+def staticupload():
+    return render_template('staticupload.html')
+
+@app.route('/s_upload', methods=['GET', 'POST'])
+def s_upload():
+    uploaded_file = request.files["img_s"]
+    fname = uploaded_file.name
+    imgshirt = cv2.imread(fname)
+    frame = cv2.imread("sample_single.png")
+    cv2.waitKey(1)
+
+    while True:
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+        # define range of green color in HSV
+        lower_green = np.array([25, 52, 72])
+        upper_green = np.array([102, 255, 255])
+        # Threshold the HSV image to get only blue colors
+        mask_white = cv2.inRange(hsv, lower_green, upper_green)
+        mask_black = cv2.bitwise_not(mask_white)
+
+        # converting mask_black to 3 channels
+        W, L = mask_black.shape
+        mask_black_3CH = np.empty((W, L, 3), dtype=np.uint8)
+        mask_black_3CH[:, :, 0] = mask_black
+        mask_black_3CH[:, :, 1] = mask_black
+        mask_black_3CH[:, :, 2] = mask_black
+
+        cv2.imshow('orignal', frame)
+        # cv2.imshow('mask_black', mask_black_3CH)
+
+        dst3 = cv2.bitwise_and(mask_black_3CH, frame)
+        # cv2.imshow('Pic+mask_inverse', dst3)
+
+        # ///////
+        W, L = mask_white.shape
+        mask_white_3CH = np.empty((W, L, 3), dtype=np.uint8)
+        mask_white_3CH[:, :, 0] = mask_white
+        mask_white_3CH[:, :, 1] = mask_white
+        mask_white_3CH[:, :, 2] = mask_white
+
+        # cv2.imshow('Wh_mask', mask_white_3CH)
+        dst3_wh = cv2.bitwise_or(mask_white_3CH, dst3)
+        # cv2.imshow('Pic+mask_wh', dst3_wh)
+
+        # /////////////////
+
+        # changing for design
+        try:
+            design = cv2.imread(imgshirt)
+            design = cv2.resize(design, mask_black.shape[1::-1])
+            # cv2.imshow('design resize', design)
+        except Exception as e:
+            print(str(e))
+
+        design_mask_mixed = cv2.bitwise_or(mask_black_3CH, design)
+        # cv2.imshow('design_mask_mixed', design_mask_mixed)
+
+        final_mask_black_3CH = cv2.bitwise_and(design_mask_mixed, dst3_wh)
+        cv2.imshow('final_out', final_mask_black_3CH)
+
+        if cv2.waitKey(10) == 27:
+            cv2.destroyAllWindows()
+            break
+    return render_template('staticupload.html')
 
 
 if __name__ == '__main__':

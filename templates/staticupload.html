@@ -83,66 +83,35 @@
         </ul>
       </div>
     </nav>
-    <div class="container">
+    <div class="container mt-5 mb-3">
       <form
-        class="form-inline mt-4"
-        action="http://127.0.0.1:5000/predict"
-        method="post"
+        action="http://127.0.0.1:5000/s_upload"
+        method="POST"
+        enctype="multipart/form-data"
       >
-        <select name="shirt" class="form-control mx-1" id="company">
-          <option value="0" selected="selected">Select a t-shirt</option>
-          <option value="1">Orange t-shirt</option>
-          <option value="2">Blue t-shirt</option>
-          <option value="3">White t-shirt</option>
-          <option value="4">Black t-shirt</option>
-        </select>
-        <select name="gender" class="form-control mx-1" id="company">
-          <option value="0" selected="selected">Gender</option>
-          <option value="1">Male</option>
-          <option value="2">Female</option>
-        </select>
-        <button type="submit" class="btn btn-default mx-1">Try</button>
+        <div class="custom-file">
+          <input
+            type="file"
+            name="img_s"
+            class="custom-file-input"
+            id="customFile"
+            accept="image/*"
+          />
+          <label class="custom-file-label" for="customFile">Choose file</label>
+        </div>
+        <div class="text-center mt-2">
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </div>
       </form>
-      <div class="row">
-        <div class="col-md-3 mt-5">
-          <figure>
-            <img src="../static/shirt_1.png" class="img-thumbnail" id="tnail" />
-            <figcaption>Orange t-shirt</figcaption>
-          </figure>
-        </div>
-        <div class="col-md-3 mt-5">
-          <figure>
-            <img src="../static/blue.png" class="img-thumbnail" id="tnail" />
-            <figcaption>Blue t-shirt</figcaption>
-          </figure>
-        </div>
-        <div class="col-md-3 mt-5">
-          <figure>
-            <img src="../static/shirt_3.jpg" class="img-thumbnail" id="tnail" />
-            <figcaption>White t-shirt</figcaption>
-          </figure>
-        </div>
-        <div class="col-md-3 mt-5">
-          <figure>
-            <img src="../static/shirt_4.jpg" class="img-thumbnail" id="tnail" />
-            <figcaption>Black t-shirt</figcaption>
-          </figure>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-md-3"></div>
-        <div class="col-md-6 text-center">
-          <a href="{{ url_for('staticupload') }}">
-            <button
-              type="button"
-              class="btn btn-primary font-weight-bold py-2 px-5"
-            >
-              Upload your own
-            </button>
-          </a>
-        </div>
-        <div class="col-md-3"></div>
-      </div>
     </div>
+    <script>
+      $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this)
+          .siblings(".custom-file-label")
+          .addClass("selected")
+          .html(fileName);
+      });
+    </script>
   </body>
 </html>
