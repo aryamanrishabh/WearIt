@@ -1,4 +1,6 @@
 from __future__ import print_function
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import  FileStorage
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -13,6 +15,7 @@ app = Flask(__name__)
 
 app.secret_key = os.urandom(12)
 
+app.config['UPLOAD_FOLDER'] = 'C:/WearIt/static/tmp/'
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -85,7 +88,7 @@ def index():
 
 
 @app.route('/predict', methods=['GET', 'POST'])
-def predict(file):
+def predict():
     gender = int(request.form["gender"])
     i = gender
     genderarr = ["sample_single.png", "girl.png"]
@@ -213,9 +216,14 @@ def staticupload():
 
 @app.route('/s_upload', methods=['GET', 'POST'])
 def s_upload():
-    uploaded_file = request.files["img_s"]
-    fname = uploaded_file.name
-    imgshirt = cv2.imread(fname)
+    path = ''
+    if request.method == 'POST':
+        f = request.files['img_s']
+        path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
+        f.save(path)
+
+    path = 'C:/WearIt/static/tmp/' + f.filename
+    imgshirt = cv2.imread(path)
     frame = cv2.imread("sample_single.png")
     cv2.waitKey(1)
 
@@ -256,12 +264,9 @@ def s_upload():
         # /////////////////
 
         # changing for design
-        try:
-            design = cv2.imread(imgshirt)
-            design = cv2.resize(design, mask_black.shape[1::-1])
-            # cv2.imshow('design resize', design)
-        except Exception as e:
-            print(str(e))
+        design = cv2.imread(imgshirt)
+        design = cv2.resize(design, mask_black.shape[1::-1])
+        # cv2.imshow('design resize', design)
 
         design_mask_mixed = cv2.bitwise_or(mask_black_3CH, design)
         # cv2.imshow('design_mask_mixed', design_mask_mixed)
@@ -272,8 +277,8 @@ def s_upload():
         if cv2.waitKey(10) == 27:
             cv2.destroyAllWindows()
             break
-    return render_template('staticupload.html')
 
+    return render_template('staticupload.html')
 
 if __name__ == '__main__':
     app.run(host='localhost', debug=True, port=5000)
