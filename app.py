@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
+from io import BytesIO
 import MySQLdb.cursors
 import re
 import os
@@ -15,7 +16,7 @@ app = Flask(__name__)
 
 app.secret_key = os.urandom(12)
 
-app.config['UPLOAD_FOLDER'] = 'C:/WearIt/static/tmp/'
+app.config['UPLOAD_FOLDER'] =  'C:/WearIt/'   #'C:/WearIt/static/tmp/'
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -222,11 +223,10 @@ def s_upload():
         path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
         f.save(path)
 
-    path = 'C:/WearIt/static/tmp/' + f.filename
-    imgshirt = cv2.imread(path)
+    img = repr(path)
+    imgshirt = cv2.imread(img)
     frame = cv2.imread("sample_single.png")
     cv2.waitKey(1)
-
     while True:
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
