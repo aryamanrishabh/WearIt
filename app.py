@@ -1,9 +1,9 @@
 from __future__ import print_function
 from werkzeug.utils import secure_filename
-from werkzeug.datastructures import  FileStorage
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
-import re
+from remove_bg_api import RemoveBg
+import requests
 import MySQLdb.cursors
 import re
 import os
@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 app.secret_key = os.urandom(12)
 
-app.config['UPLOAD_FOLDER'] =  'C:/WearIt/'   #'C:/WearIt/static/tmp/'
+app.config['UPLOAD_FOLDER'] = 'C:/WearIt/static/tmp/'
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -25,6 +25,7 @@ app.config['MYSQL_DB'] = 'userlogin'
 
 mysql = MySQL(app)
 
+removebg = RemoveBg('bFoqzCBAmw4h3oAJkY5Gc56q')
 
 @app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
@@ -217,14 +218,18 @@ def staticupload():
 
 @app.route('/s_upload', methods=['GET', 'POST'])
 def s_upload():
-    path = ''
-    if request.method == 'POST':
-        f = request.files['img_s']
-        path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
-        f.save(path)
 
+    f = request.files['img_s']
+    # path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
+    f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
     imgshirt = 'C:/WearIt/static/tmp/' + f.filename;
+
+    out = 'C:/WearIt/static/rbg/' + f.filename;
+
+    image = removebg.remove_bg_file(input_path=imgshirt, out_path=out, size="preview", raw=False)
+
     frame = cv2.imread("sample_single.png")
+
     cv2.waitKey(1)
 
     while True:
@@ -265,7 +270,7 @@ def s_upload():
 
         # changing for design
         #p = "C:/WearIt/static/blue_1.png"
-        design = cv2.imread(imgshirt)
+        design = cv2.imread(image)
         design = cv2.resize(design, mask_black.shape[1::-1])
         # cv2.imshow('design resize', design)
 
