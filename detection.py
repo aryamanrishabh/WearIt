@@ -30,7 +30,7 @@ def bodyDetection(frame, face_cascade, filename):
             #When the size of roi out of frame boundary, do not combine both roi and clothes image
             #as it will produce error
         if img_height != roi_height or img_width!=roi_width :
-            cv2.imshow("My window", frame)
+            cv2.imshow("WearIt", frame)
             return
         #When the size of roi not out of frame boundary, execute following code
         img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -49,4 +49,4 @@ def bodyDetection(frame, face_cascade, filename):
         added_image =  cv2.addWeighted(frame[ 0 :height, 0:width,:],alpha,img_fg[0 :height, 0: width,:],1-alpha,0)
             # Paste the combined image on the video frame
         frame[body_start_y:body_end_y, body_start_x:body_end_x] = added_image
-    cv2.imshow("My window", frame)
+    cv2.imshow("WearIt", frame)

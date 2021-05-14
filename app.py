@@ -168,8 +168,7 @@ def RT():
 @app.route('/pred', methods=['GET', 'POST'])
 def pred():
     parser = argparse.ArgumentParser(description='Code for Cascade Classifier tutorial.')
-    parser.add_argument('--face_cascade', help='Path to face cascade.',
-                        default='data/haarcascades/haarcascade_frontalface_alt.xml')
+    parser.add_argument('--face_cascade', help='Path to face cascade.', default='data/haarcascades/haarcascade_frontalface_alt.xml')
     parser.add_argument('--camera', help='Camera divide number.', type=int, default=0)
     args = parser.parse_args()
     face_cascade_name = args.face_cascade
@@ -212,7 +211,7 @@ def pred():
 
     return render_template('realtime.html')
 
-@app.route('/staticupload')
+@app.route('/static/staticupload')
 def staticupload():
     return render_template('staticupload.html')
 
@@ -222,9 +221,9 @@ def s_upload():
     f = request.files['img_s']
     # path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
     f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-    imgshirt = 'C:/WearIt/static/tmp/' + f.filename;
+    imgshirt = 'C:/WearIt/static/tmp/' + f.filename
 
-    out = 'C:/WearIt/static/rbg/' + f.filename;
+    out = 'C:/WearIt/static/rbg/' + f.filename
 
     image = removebg.remove_bg_file(input_path=imgshirt, out_path=out, size="preview", raw=False)
 
@@ -285,6 +284,59 @@ def s_upload():
             break
 
     return render_template('staticupload.html')
+
+@app.route('/RT/rtupload')
+def rtupload():
+    return render_template('rtupload.html')
+
+@app.route('/rt_upload', methods=['GET', 'POST'])
+def rt_upload():
+
+    parser = argparse.ArgumentParser(description='Code for Cascade Classifier tutorial.')
+    parser.add_argument('--face_cascade', help='Path to face cascade.', default='data/haarcascades/haarcascade_frontalface_alt.xml')
+    parser.add_argument('--camera', help='Camera divide number.', type=int, default=0)
+    args = parser.parse_args()
+    face_cascade_name = args.face_cascade
+    face_cascade = cv2.CascadeClassifier()
+
+    f = request.files['img_rt']
+    f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+    imgshirt = 'C:/WearIt/static/tmp/' + f.filename
+
+    out = 'C:/WearIt/static/rbg/' + f.filename
+
+    image = removebg.remove_bg_file(input_path=imgshirt, out_path=out, size="auto", raw=False)
+
+    if not face_cascade.load(cv2.samples.findFile(face_cascade_name)):
+        print('(!)Error loading face cascade')
+        exit(0)
+    camera_device = args.camera
+
+    # -- 2. Read the video stream
+    cap = cv2.VideoCapture(camera_device)
+    cap.set(3, 480)  # CV_CAP_PROP_FRAME_WIDTH
+    cap.set(4, 360)  # CV_CAP_PROP_FRAME_HEIGHT
+    cap.set(cv2.CAP_PROP_FPS, 120)
+
+    if not cap.isOpened:
+        print('(!)Error opening video capture')
+        exit(0)
+
+    while True:
+        ret, frame = cap.read()
+
+        if frame is None:
+            print('(!) No captured frame -- Break!')
+            break
+
+        bodyDetection(frame, face_cascade, image)
+        if cv2.waitKey(10) == 27:
+            cap.release()
+            cv2.destroyAllWindows()
+            break
+
+    return render_template('rtupload.html')
+
 
 if __name__ == '__main__':
     app.run(host='localhost', debug=True, port=5000)
